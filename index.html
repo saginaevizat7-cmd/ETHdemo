@@ -1274,7 +1274,19 @@
                     value: totalPriceWei 
                 });
 
-                setFeedbackFor(item.id, "Transaction sent! Waiting...");
+               // --- НАЧАЛО ЗАМЕНЫ ---
+const commissionRate = 0.02; // 2% комиссия
+const commissionAmountWei = totalPriceWei * BigInt(Math.round(commissionRate * 100)) / BigInt(100);
+const amountToArtisanWei = totalPriceWei - commissionAmountWei;
+
+// Конвертируем обратно в ETH для отображения
+const totalEth = ethers.formatEther(totalPriceWei);
+const artisanEth = ethers.formatEther(amountToArtisanWei);
+const commissionEth = ethers.formatEther(commissionAmountWei);
+
+setFeedbackFor(item.id, `Preparing: Total ${totalEth} ETH (${artisanEth} to artisan, ${commissionEth} platform fee)`);
+buyButton.disabled = true; // Блокируем КОНКРЕТНУЮ кнопку
+// --- КОНЕЦ ЗАМЕНЫ ---
                 await tx.wait(); // Ждем подтверждения
 
                 setFeedbackFor(item.id, `Success! Bought ${buyAmount} share(s).`);
@@ -1324,3 +1336,4 @@
 </body>
 
 </html>
+
