@@ -1262,7 +1262,19 @@
             const buyButton = document.getElementById(item.buyButtonId); // Находим конкретную кнопку
 
             try {
-                setFeedbackFor(item.id, "Preparing transaction...");
+               // --- НАЧАЛО ЗАМЕНЫ ---
+const commissionRate = 0.02; // 2% комиссия
+const commissionAmountWei = totalPriceWei * BigInt(Math.round(commissionRate * 100)) / BigInt(100);
+const amountToArtisanWei = totalPriceWei - commissionAmountWei;
+
+// Конвертируем обратно в ETH для отображения
+const totalEth = ethers.formatEther(totalPriceWei);
+const artisanEth = ethers.formatEther(amountToArtisanWei);
+const commissionEth = ethers.formatEther(commissionAmountWei);
+
+setFeedbackFor(item.id, `Preparing: Total ${totalEth} ETH (${artisanEth} to artisan, ${commissionEth} platform fee)`);
+buyButton.disabled = true; // Блокируем КОНКРЕТНУЮ кнопку
+// --- КОНЕЦ ЗАМЕНЫ ---
                 buyButton.disabled = true; // Блокируем КОНКРЕТНУЮ кнопку
 
                 const contractWithSigner = contract.connect(signer);
@@ -1336,4 +1348,5 @@ buyButton.disabled = true; // Блокируем КОНКРЕТНУЮ кнопк
 </body>
 
 </html>
+
 
